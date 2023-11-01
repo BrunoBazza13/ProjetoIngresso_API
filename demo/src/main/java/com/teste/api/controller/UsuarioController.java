@@ -9,35 +9,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teste.api.model.entidades.Administrador;
+import com.teste.api.model.entidades.Carrinho;
 import com.teste.api.model.entidades.Usuario;
 import com.teste.api.model.entidades.UsuarioComum;
+import com.teste.api.service.CarrinhoService;
 import com.teste.api.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuario")
 public class UsuarioController {
-	
-	   private final UsuarioService usuarioService;
 
-	    @Autowired
-	    public UsuarioController(UsuarioService usuarioService) {
-	        this.usuarioService = usuarioService;
-	    }
+	private final UsuarioService usuarioService;
+	private final CarrinhoService carrinhoService;
 
-	    @PostMapping
-	    public ResponseEntity<Usuario> adicionarUsuarioAdm(Administrador novoUsuario) {
-	    	Usuario usuarioAdicionado = usuarioService.adicionarUsuario(novoUsuario);
-	    	
-	        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioAdicionado);
-	    }
-	 
-	    @PostMapping(path = "/cliente")
-	    public ResponseEntity<Usuario> adicionarUsuarioComum(@RequestBody UsuarioComum novoUsuario) {
-	    	Usuario usuarioAdicionado = usuarioService.adicionarUsuario(novoUsuario);
-	    	
-	        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioAdicionado);
-	    }
-	    
-	    
-	
+	@Autowired
+	public UsuarioController(UsuarioService usuarioService, CarrinhoService carrinhoService) {
+		super();
+		this.usuarioService = usuarioService;
+		this.carrinhoService = carrinhoService;
+	}
+
+//	@PostMapping
+//	public ResponseEntity<Usuario> adicionarUsuarioAdm(Administrador novoUsuario) {
+//		Usuario usuarioAdicionado = usuarioService.adicionarUsuario(novoUsuario);
+//
+//		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioAdicionado);
+//	}
+
+	@PostMapping(path = "/cliente")
+	public ResponseEntity<Usuario> adicionarUsuarioComum(@RequestBody UsuarioComum novoUsuario) {
+
+		usuarioService.adicionarUsuario(novoUsuario);
+
+		Carrinho carrinho = new Carrinho(novoUsuario);
+
+		carrinhoService.adicionaCarrinhho(carrinho);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+	}
+
 }
